@@ -29,6 +29,8 @@ import {
   DEFAULT_GEMINI_MODEL,
 } from '../../services/geminiConfig';
 import { getLocalDateString } from '../../utils/finance';
+import { SectionHeader } from '../common/SectionHeader';
+import { setTutorialCompleted } from '../tutorial/AppTutorialModal';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -144,20 +146,27 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '840px' }}>
-      {/* Header */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span className="pulsing-dot" />
-          <span className="status-pill status-pill-red">CONFIGURATION PROTOCOL</span>
-        </div>
-        <h1 style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.35rem', color: '#ffffff', letterSpacing: '-0.02em' }}>
-          SYSTEM SETTINGS
-        </h1>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          Manage your personal financial profile, currency preferences, demo scenarios, and local storage data.
-        </p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '880px' }}>
+      {/* Header with Section Intel */}
+      <SectionHeader
+        sectionIndex="07"
+        tag="CONFIGURATION"
+        title="System Settings & Baseline"
+        description="Manage your verified financial baseline, currency preferences, simulation demo mode, and encrypted local backups."
+        actions={
+          <button
+            type="button"
+            onClick={() => {
+              setTutorialCompleted(false);
+              window.location.reload();
+            }}
+            className="btn-secondary"
+            style={{ fontSize: '0.78rem', padding: '0.5rem 0.95rem' }}
+          >
+            Replay Orientation Tour
+          </button>
+        }
+      />
 
       {/* 1. DEMO MODE TOGGLE PANEL */}
       <div

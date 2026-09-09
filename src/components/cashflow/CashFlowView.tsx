@@ -22,6 +22,7 @@ import { TransactionModal } from './TransactionModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { BudgetModal } from './BudgetModal';
 import { SpendingChart } from './SpendingChart';
+import { SectionHeader } from '../common/SectionHeader';
 import {
   ChevronLeft,
   ChevronRight,
@@ -196,110 +197,89 @@ export const CashFlowView: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* 1. HEADER & MONTH SELECTOR */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1.25rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span className="pulsing-dot" />
-            <span className="status-pill status-pill-red">CASH FLOW MATRIX</span>
-            {isDemoMode && <span className="status-pill status-pill-yellow">DEMO DATA</span>}
-          </div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.35rem', color: '#ffffff', letterSpacing: '-0.02em' }}>
-            CASH FLOW & BUDGET CONSOLE
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Track every rupee across inflows, committed obligations, and category thresholds.
-          </p>
-        </div>
+      <SectionHeader
+        sectionIndex="02"
+        tag="CASH FLOW LEDGER"
+        title="Cash Flow & Budget Engine"
+        description="Deterministic financial ledger tracking verified monthly inflows, fixed commitments, and variable spending with zero guesswork."
+        actions={
+          <>
+            {/* Tactical Month Selector Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', padding: '0.35rem 0.5rem', borderRadius: '10px', border: '1px solid var(--border-card)' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedMonth(previousMonthKey)}
+                className="btn-ghost"
+                style={{ padding: '0.4rem', borderRadius: '6px' }}
+                title="Previous Month"
+              >
+                <ChevronLeft size={16} />
+              </button>
 
-        {/* Tactical Month Selector Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-card)', padding: '0.35rem 0.5rem', borderRadius: '10px', border: '1px solid var(--border-card)' }}>
-          <button
-            type="button"
-            onClick={() => setSelectedMonth(previousMonthKey)}
-            className="btn-ghost"
-            style={{ padding: '0.4rem', borderRadius: '6px' }}
-            title="Previous Month"
-          >
-            <ChevronLeft size={16} />
-          </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 0.5rem' }}>
+                <Calendar size={15} style={{ color: 'var(--red-bright)' }} />
+                <span className="font-mono" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>
+                  {formatMonthLabel(selectedMonth).toUpperCase()}
+                </span>
+              </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0 0.5rem' }}>
-            <Calendar size={15} style={{ color: 'var(--red-bright)' }} />
-            <span className="font-mono" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>
-              {formatMonthLabel(selectedMonth).toUpperCase()}
-            </span>
-          </div>
+              <button
+                type="button"
+                onClick={() => setSelectedMonth(nextMonthKey)}
+                className="btn-ghost"
+                style={{ padding: '0.4rem', borderRadius: '6px' }}
+                title="Next Month"
+              >
+                <ChevronRight size={16} />
+              </button>
 
-          <button
-            type="button"
-            onClick={() => setSelectedMonth(nextMonthKey)}
-            className="btn-ghost"
-            style={{ padding: '0.4rem', borderRadius: '6px' }}
-            title="Next Month"
-          >
-            <ChevronRight size={16} />
-          </button>
+              {selectedMonth !== currentMonthKey && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedMonth(currentMonthKey)}
+                  className="btn-tactical btn-ghost"
+                  style={{ fontSize: '0.7rem', padding: '0.25rem 0.6rem', marginLeft: '0.25rem' }}
+                >
+                  Current
+                </button>
+              )}
+            </div>
 
-          {selectedMonth !== currentMonthKey && (
             <button
               type="button"
-              onClick={() => setSelectedMonth(currentMonthKey)}
-              className="btn-tactical btn-ghost"
-              style={{ fontSize: '0.7rem', padding: '0.25rem 0.6rem', marginLeft: '0.25rem' }}
+              onClick={() =>
+                openAdvisorWithContext(
+                  { page: 'cashflow' },
+                  `Analyze my spending patterns for ${formatMonthLabel(selectedMonth)}, identify overspending categories, and recommend where I can cut expenses.`
+                )
+              }
+              className="btn-ghost"
+              style={{ fontSize: '0.78rem', padding: '0.55rem 0.85rem', gap: '0.4rem' }}
             >
-              Current
+              <Terminal size={14} style={{ color: 'var(--red-bright)' }} />
+              <span>Analyze</span>
             </button>
-          )}
-        </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() =>
-              openAdvisorWithContext(
-                { page: 'cashflow' },
-                `Analyze my spending patterns for ${formatMonthLabel(selectedMonth)}, identify overspending categories, and recommend where I can cut expenses.`
-              )
-            }
-            style={{
-              background: 'rgba(230, 57, 70, 0.15)',
-              border: '1px solid rgba(230, 57, 70, 0.5)',
-              color: '#f8f9fa',
-              fontSize: '0.8rem',
-              padding: '0.55rem 1.1rem',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              fontFamily: 'JetBrains Mono, monospace',
-              fontWeight: 700,
-            }}
-          >
-            <Terminal size={14} color="var(--red-bright)" /> ANALYZE SPENDING
-          </button>
+            <button
+              type="button"
+              onClick={handleOpenAddBudget}
+              className="btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '0.55rem 1rem' }}
+            >
+              <Target size={14} /> Define Budget
+            </button>
 
-          <button
-            type="button"
-            onClick={handleOpenAddBudget}
-            className="btn-secondary"
-            style={{ fontSize: '0.8rem', padding: '0.55rem 1.1rem' }}
-          >
-            <Target size={14} /> + DEFINE BUDGET
-          </button>
-
-          <button
-            type="button"
-            onClick={handleOpenAddTx}
-            className="btn-primary"
-            style={{ fontSize: '0.8rem', padding: '0.55rem 1.1rem' }}
-          >
-            <Plus size={15} /> + RECORD TRANSACTION
-          </button>
-        </div>
-
-      </div>
+            <button
+              type="button"
+              onClick={handleOpenAddTx}
+              className="btn-primary"
+              style={{ fontSize: '0.8rem', padding: '0.55rem 1.25rem' }}
+            >
+              <Plus size={15} /> Add Transaction
+            </button>
+          </>
+        }
+      />
 
       {/* 2. MONTHLY OVERVIEW HUD CARDS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.25rem' }}>

@@ -14,6 +14,7 @@ import { AdvisorView } from './components/advisor/AdvisorView';
 import { InsightsView } from './components/insights/InsightsView';
 import { SettingsView } from './components/settings/SettingsView';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
+import { AppTutorialModal, isTutorialCompleted } from './components/tutorial/AppTutorialModal';
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -25,7 +26,11 @@ import {
 } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { activeTab, setActiveTab, showOnboardingModal, setShowOnboardingModal } = useFinance();
+  const { activeTab, setActiveTab, showOnboardingModal, setShowOnboardingModal, profile, isDemoMode } = useFinance();
+  const [showTutorial, setShowTutorial] = React.useState<boolean>(() => {
+    // Show tutorial on initial load if user has completed onboarding or is in demo mode and hasn't finished tutorial
+    return !isTutorialCompleted() && (profile.hasCompletedOnboarding || isDemoMode);
+  });
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -67,7 +72,10 @@ const MainAppContent: React.FC = () => {
 
       {/* Main Content Arena */}
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <TopBar onEditBaseline={() => setShowOnboardingModal(true)} />
+        <TopBar
+          onEditBaseline={() => setShowOnboardingModal(true)}
+          onOpenTutorial={() => setShowTutorial(true)}
+        />
 
         <main style={{ padding: '1.75rem 2rem 5rem', maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
           <div key={activeTab} className="view-enter">
@@ -76,21 +84,7 @@ const MainAppContent: React.FC = () => {
         </main>
 
         {/* Mobile Navigation Bar */}
-        <nav
-          className="mobile-bottom-nav"
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'rgba(8, 10, 15, 0.95)',
-            backdropFilter: 'blur(8px)',
-            borderTop: '1px solid var(--border-tactical)',
-            padding: '0.45rem 0.65rem',
-            justifyContent: 'space-around',
-            zIndex: 60,
-          }}
-        >
+        <nav className="mobile-bottom-nav">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -123,6 +117,13 @@ const MainAppContent: React.FC = () => {
 
       {/* Onboarding & Baseline Setup Modal */}
       {showOnboardingModal && <OnboardingWizard />}
+
+      {/* Guided Operations Tutorial */}
+      <AppTutorialModal
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
+        onJumpToTab={(tabId) => setActiveTab(tabId)}
+      />
     </div>
   );
 };

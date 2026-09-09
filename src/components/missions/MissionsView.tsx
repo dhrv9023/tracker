@@ -12,6 +12,7 @@ import { CreateMissionModal } from './CreateMissionModal';
 import { DeployCapitalModal } from './DeployCapitalModal';
 import { MissionDetailModal } from './MissionDetailModal';
 import { AIMissionAssistantModal } from './AIMissionAssistantModal';
+import { SectionHeader } from '../common/SectionHeader';
 import {
   Target,
   Plus,
@@ -41,7 +42,6 @@ export const MissionsView: React.FC = () => {
     openAdvisorWithContext,
   } = useFinance();
 
-
   // Modal controls
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showAIModal, setShowAIModal] = useState<boolean>(false);
@@ -49,10 +49,10 @@ export const MissionsView: React.FC = () => {
   const [selectedMissionIdForDeploy, setSelectedMissionIdForDeploy] = useState<string | undefined>(undefined);
   const [inspectMissionId, setInspectMissionId] = useState<string | null>(null);
 
-  // Filters & Sorting
+  // Filter & sorting states
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'deadline' | 'target' | 'progress' | 'priority'>('priority');
   const [viewTab, setViewTab] = useState<'active' | 'completed'>('active');
-  const [sortBy, setSortBy] = useState<'priority' | 'progress' | 'target' | 'deadline'>('priority');
 
   const handleOpenDeployForMission = (missionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -60,18 +60,17 @@ export const MissionsView: React.FC = () => {
     setShowDeployModal(true);
   };
 
-  // Filtered & Sorted Active Missions
-  const displayedActiveMissions = useMemo(() => {
-    let list = [...activeMissions];
-
-    if (priorityFilter !== 'all') {
-      list = list.filter((m) => m.priority === priorityFilter);
-    }
+  // Sorted and filtered active missions
+  const filteredActiveMissions = useMemo(() => {
+    let list = activeMissions.filter((m) => {
+      if (priorityFilter !== 'all' && m.priority !== priorityFilter) return false;
+      return true;
+    });
 
     list.sort((a, b) => {
       if (sortBy === 'priority') {
-        const pOrder: Record<MissionPriority, number> = { high: 3, medium: 2, low: 1 };
-        return pOrder[b.priority] - pOrder[a.priority];
+        const pOrder: Record<string, number> = { high: 3, medium: 2, low: 1 };
+        return (pOrder[b.priority] || 0) - (pOrder[a.priority] || 0);
       }
       if (sortBy === 'progress') {
         return (
@@ -93,55 +92,49 @@ export const MissionsView: React.FC = () => {
     return list;
   }, [activeMissions, priorityFilter, sortBy]);
 
+  const displayedActiveMissions = filteredActiveMissions;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Top Header & Console Actions */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span className="pulsing-dot" />
-            <span className="status-pill status-pill-red">STRATEGIC CAPITAL ALLOCATION</span>
-            {isDemoMode && <span className="status-pill status-pill-yellow">DEMO MODE ACTIVE</span>}
-          </div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, marginTop: '0.35rem', color: '#ffffff', letterSpacing: '-0.02em' }}>
-            Savings Missions Console
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Plan, simulate, and track capital toward high-conviction financial goals. Zero guesswork.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedMissionIdForDeploy(undefined);
-              setShowDeployModal(true);
-            }}
-            disabled={missions.length === 0}
-            className="btn-secondary"
-            style={{ fontSize: '0.825rem', padding: '0.6rem 1.15rem' }}
-          >
-            <ArrowUpRight size={16} /> Deploy Capital
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowAIModal(true)}
-            className="btn-primary"
-            style={{ fontSize: '0.825rem', padding: '0.6rem 1.15rem' }}
-          >
-            <Sliders size={15} /> SIMULATE PLAN
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="btn-secondary"
-            style={{ fontSize: '0.825rem', padding: '0.6rem 1.15rem' }}
-          >
-            <Plus size={15} /> NEW MISSION
-          </button>
-        </div>
-      </div>
+      <SectionHeader
+        sectionIndex="03"
+        tag="SAVINGS MISSIONS"
+        title="Savings Missions & Goal Execution"
+        description="Tactical goal execution. Define target funds, track deterministic monthly pacing, and deploy capital when milestones are reached."
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedMissionIdForDeploy(undefined);
+                setShowDeployModal(true);
+              }}
+              disabled={missions.length === 0}
+              className="btn-ghost"
+              style={{ fontSize: '0.78rem', padding: '0.55rem 0.95rem' }}
+            >
+              <ArrowUpRight size={15} /> Deploy Capital
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAIModal(true)}
+              className="btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '0.55rem 1rem' }}
+            >
+              <Sliders size={14} /> Assisted Setup
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="btn-primary"
+              style={{ fontSize: '0.8rem', padding: '0.55rem 1.25rem' }}
+            >
+              <Plus size={15} /> New Mission
+            </button>
+          </>
+        }
+      />
 
       {/* MULTI-MISSION CONFLICT SAFEGUARD BANNER */}
       {missionConflict.hasConflict && (

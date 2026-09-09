@@ -98,7 +98,7 @@ export async function generateGeminiContent(options: {
   const customClientKey = options.apiKey || getStoredClientApiKey();
   const isVitest = typeof process !== 'undefined' && Boolean(process.env?.VITEST);
 
-  // If no explicit custom client key was entered, try dev server proxy with timeout (except in test runner)
+  // If no explicit custom client key was entered, try serverless proxy (except in test runner)
   if (!isVitest && !customClientKey && typeof window !== 'undefined' && window.location) {
     try {
       const res = await fetch('/api/gemini', {
@@ -109,7 +109,7 @@ export async function generateGeminiContent(options: {
           contents: options.contents,
           config: options.config,
         }),
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (res.ok) {
@@ -117,9 +117,20 @@ export async function generateGeminiContent(options: {
         if (json && typeof json.text === 'string') {
           return json.text;
         }
+      } else if (res.status === 401) {
+        // Server has no key configured
+        const errJson = await res.json().catch(() => ({}));
+        if (errJson?.error === 'NO_SERVER_KEY') {
+          // Check if there is an active client key to try as fallback
+          const clientFallback = getActiveGeminiApiKey();
+          if (!clientFallback) {
+            throw new Error('NO_API_KEY');
+          }
+        }
       }
-    } catch (err) {
-      // Proxy unavailable or timeout; fall through to client call
+    } catch (err: any) {
+      if (err?.message === 'NO_API_KEY') throw err;
+      // Proxy unavailable, timeout, or network glitch; fall through to direct client call if key available
     }
   }
 

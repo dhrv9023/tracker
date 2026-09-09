@@ -6,13 +6,14 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
-import { Edit3 } from 'lucide-react';
+import { Edit3, HelpCircle } from 'lucide-react';
 
 interface TopBarProps {
   onEditBaseline: () => void;
+  onOpenTutorial: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }) => {
   const { activeTab, snapshot } = useFinance();
 
   const getPageTitle = (tab: string) => {
@@ -94,6 +95,18 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline }) => {
             {snapshot.isDeficit ? `-${formatINR(Math.abs(snapshot.monthlySurplus))}` : formatINR(snapshot.monthlySurplus)}
           </span>
         </div>
+
+        {/* Quick Tour Action */}
+        <button
+          type="button"
+          onClick={onOpenTutorial}
+          className="btn-ghost"
+          style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem', gap: '0.35rem' }}
+          title="Tactical System Walkthrough"
+        >
+          <HelpCircle size={14} style={{ color: 'var(--red-bright)' }} />
+          <span>Quick Tour</span>
+        </button>
 
         {/* Quick Action */}
         <button

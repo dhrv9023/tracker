@@ -16,6 +16,7 @@ import { SIPCalculatorCard } from './SIPCalculatorCard';
 import { ScenarioComparisonTable } from './ScenarioComparisonTable';
 import { GeminiInvestmentAdvisorPanel } from './GeminiInvestmentAdvisorPanel';
 import { RiskQuestionnaireModal } from './RiskQuestionnaireModal';
+import { SectionHeader } from '../common/SectionHeader';
 import {
   TrendingUp,
   Shield,
@@ -36,67 +37,42 @@ export const AssetsView: React.FC = () => {
     openAdvisorWithContext,
   } = useFinance();
 
-
   const [isQuestionnaireOpen, setIsQuestionnaireOpen] = useState(false);
 
   return (
-    <div
-      style={{
-        padding: '24px 32px',
-        maxWidth: '1400px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '28px',
-      }}
-    >
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       {/* Top Banner & Telemetry Readout */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '20px',
-          paddingBottom: '20px',
-          borderBottom: '1px solid var(--border-subtle, rgba(255, 255, 255, 0.08))',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '11px',
-                color: 'var(--accent-gold, #d4af37)',
-                letterSpacing: '0.1em',
-              }}
+      <SectionHeader
+        sectionIndex="04"
+        tag="ASSETS & SIP"
+        title="Assets & Investment Planner"
+        description="Long-term wealth building simulator. Model compound monthly SIP growth over 1 to 30 years and test asset allocation models."
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setIsQuestionnaireOpen(true)}
+              className="btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '0.55rem 1rem' }}
             >
-              FINANCE OS // ASSET ENGINE
-            </span>
-          </div>
-          <h1
-            style={{
-              fontSize: '26px',
-              fontWeight: 800,
-              color: 'var(--text-main, #f0f4f8)',
-              letterSpacing: '0.02em',
-              margin: 0,
-            }}
-          >
-            ASSET ALLOCATION
-          </h1>
-          <p
-            style={{
-              fontSize: '14px',
-              color: 'var(--text-secondary, #94a3b8)',
-              marginTop: '4px',
-              marginBottom: 0,
-            }}
-          >
-            Build an investment plan around your financial reality.
-          </p>
-        </div>
+              <Shield size={14} /> Risk Questionnaire
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                openAdvisorWithContext(
+                  { page: 'assets' },
+                  'Analyze my investment capacity, current portfolio allocation, and suggest adjustments for optimal risk-adjusted growth.'
+                )
+              }
+              className="btn-primary"
+              style={{ fontSize: '0.8rem', padding: '0.55rem 1.25rem' }}
+            >
+              <Terminal size={14} /> AI Portfolio Analysis
+            </button>
+          </>
+        }
+      />
 
         {/* Top Telemetry Pills */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -215,8 +191,6 @@ export const AssetsView: React.FC = () => {
             <span>REVIEW THIS PLAN</span>
           </button>
         </div>
-      </div>
-
 
       {/* 1. Investment Readiness Card */}
       <InvestmentReadinessCard onOpenQuestionnaire={() => setIsQuestionnaireOpen(true)} />

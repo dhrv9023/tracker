@@ -10,6 +10,7 @@ import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
 import { FinancialInsight, InsightCategory, InsightSeverity, MonthlyReviewReport, MonthlyReviewAIOutput } from '../../types/finance';
 import { generateMonthlyReviewExplanation } from '../../services/geminiMonthlyReviewService';
+import { SectionHeader } from '../common/SectionHeader';
 import {
   Activity,
   AlertTriangle,
@@ -143,70 +144,60 @@ export const InsightsView: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1280px', margin: '0 auto', color: 'var(--text-primary)' }}>
-      {/* View Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--cyan-glow, #38bdf8)', boxShadow: '0 0 8px #38bdf8' }} />
-            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', color: 'var(--text-muted)' }}>
-              INTELLIGENCE MONITORING & AUDIT // PHASE 7
-            </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      {/* View Header with Section Intel */}
+      <SectionHeader
+        sectionIndex="05"
+        tag="INTELLIGENCE & AUDIT"
+        title="Insights & Monthly Review"
+        description="Automated financial audit. Detects month-over-month spending shifts, category anomalies, and computes your 100-point Financial Health Score."
+        actions={
+          <div style={{ display: 'flex', background: 'var(--bg-card)', padding: '0.3rem', borderRadius: '8px', border: '1px solid var(--border-card)', gap: '0.3rem' }}>
+            <button
+              onClick={() => setActiveSubTab('feed')}
+              style={{
+                padding: '0.55rem 1.15rem',
+                borderRadius: '6px',
+                border: 'none',
+                background: activeSubTab === 'feed' ? 'var(--red-primary)' : 'transparent',
+                color: activeSubTab === 'feed' ? '#ffffff' : 'var(--text-secondary)',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                letterSpacing: '0.05em',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Activity size={15} />
+              FEED ({insights.length})
+            </button>
+            <button
+              onClick={() => setActiveSubTab('review')}
+              style={{
+                padding: '0.55rem 1.15rem',
+                borderRadius: '6px',
+                border: 'none',
+                background: activeSubTab === 'review' ? 'var(--red-primary)' : 'transparent',
+                color: activeSubTab === 'review' ? '#ffffff' : 'var(--text-secondary)',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+                letterSpacing: '0.05em',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <FileText size={15} />
+              MONTHLY AUDIT
+            </button>
           </div>
-          <h1 style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', margin: 0, textTransform: 'uppercase' }}>
-            Strategic Intelligence
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', margin: '0.35rem 0 0', fontSize: '0.9rem' }}>
-            Continuous deterministic monitoring, anomaly detection, allocation conflict tracking, and monthly execution reviews.
-          </p>
-        </div>
-
-        {/* Tactical Sub-Tab Switcher */}
-        <div style={{ display: 'flex', background: 'var(--bg-surface)', padding: '0.3rem', borderRadius: '8px', border: '1px solid var(--border-subtle)', gap: '0.3rem' }}>
-          <button
-            onClick={() => setActiveSubTab('feed')}
-            style={{
-              padding: '0.55rem 1.15rem',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeSubTab === 'feed' ? 'var(--red-primary)' : 'transparent',
-              color: activeSubTab === 'feed' ? '#ffffff' : 'var(--text-secondary)',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              letterSpacing: '0.05em',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <Activity size={15} />
-            01 // INTELLIGENCE FEED ({insights.length})
-          </button>
-          <button
-            onClick={() => setActiveSubTab('review')}
-            style={{
-              padding: '0.55rem 1.15rem',
-              borderRadius: '6px',
-              border: 'none',
-              background: activeSubTab === 'review' ? 'var(--red-primary)' : 'transparent',
-              color: activeSubTab === 'review' ? '#ffffff' : 'var(--text-secondary)',
-              fontWeight: 700,
-              fontSize: '0.8rem',
-              letterSpacing: '0.05em',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <Calendar size={15} />
-            02 // MONTHLY REVIEW
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Telemetry Sufficiency Status Strip */}
       <div

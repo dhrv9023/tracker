@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
+import { SectionHeader } from '../common/SectionHeader';
 import {
   ShieldCheck,
   Terminal,
@@ -97,61 +98,33 @@ export const AdvisorView: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minHeight: 'calc(100vh - 120px)' }}>
-      {/* 1. ADVISOR HEADER */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          borderBottom: '1px solid var(--border-card)',
-          paddingBottom: '1.25rem',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-            <span className="pulsing-dot" style={{ background: 'var(--status-green)' }} />
-            <h1
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-                color: '#ffffff',
-                margin: 0,
-                textTransform: 'uppercase',
-              }}
+      {/* 1. ADVISOR HEADER WITH SECTION INTEL */}
+      <SectionHeader
+        sectionIndex="06"
+        tag="TACTICAL COPILOT"
+        title="The Financial Advisor"
+        description="Conversational copilot grounded strictly in your verified financial data. Ask questions, evaluate trade-offs, and run scenario checks without hallucinated figures."
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setShowPrivacyModal(true)}
+              className="btn-secondary"
+              style={{ fontSize: '0.78rem', padding: '0.5rem 0.95rem' }}
             >
-              ADVISOR // FINANCIAL GUIDANCE // READY
-            </h1>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
-            AI-assisted analysis of deterministic financial calculations and tactical planning intelligence.
-          </p>
-        </div>
-
-        {/* Action controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button
-            type="button"
-            onClick={() => setShowPrivacyModal(true)}
-            className="btn-secondary"
-            style={{ fontSize: '0.75rem', padding: '0.45rem 0.85rem' }}
-          >
-            <ShieldCheck size={14} />
-            PRIVACY & SECURITY
-          </button>
-          <button
-            type="button"
-            onClick={clearAdvisorHistory}
-            className="btn-secondary"
-            style={{ fontSize: '0.75rem', padding: '0.45rem 0.85rem' }}
-          >
-            <RotateCcw size={14} />
-            RESET TERMINAL
-          </button>
-        </div>
-      </div>
+              <ShieldCheck size={14} /> Privacy & Security
+            </button>
+            <button
+              type="button"
+              onClick={clearAdvisorHistory}
+              className="btn-ghost"
+              style={{ fontSize: '0.78rem', padding: '0.5rem 0.95rem' }}
+            >
+              <RotateCcw size={14} /> Clear History
+            </button>
+          </>
+        }
+      />
 
       {/* 2. ACTIVE SCREEN CONTEXT BADGE (If user arrived with context) */}
       {advisorScreenContext && (

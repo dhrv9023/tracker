@@ -75,11 +75,13 @@
 
 html, body {
   background-color: var(--bg-app);
-  /* Faint static tactical grid texture */
+  /* Ambient tactical glow inspired by Picture 1 & 2 + faint tactical grid */
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 32px 32px;
+    radial-gradient(circle at 85% 0%, rgba(229, 9, 20, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 15% 100%, rgba(229, 9, 20, 0.05) 0%, transparent 35%),
+    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
   background-attachment: fixed;
   color: var(--text-main);
   font-family: var(--font-sans);
