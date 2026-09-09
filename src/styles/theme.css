@@ -1,0 +1,374 @@
+/* ==========================================================================
+   PERSONAL FINANCE COMMAND CENTER — DESIGN SYSTEM
+   Human-Designed Tactical Aesthetic & Cinematic Money-Heist Influence
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Near Black, Charcoal, Deep Red, Off-White, Muted Slate */
+  --bg-app: #090a0f;
+  --bg-sidebar: #12151d;
+  --bg-card: #11141e;
+  --bg-card-elevated: #171b28;
+  --bg-card-hover: #1a1f2e;
+  --bg-panel: #11141e;
+  --bg-panel-subtle: #0d1018;
+  --bg-input: #0a0c13;
+
+  /* Borders — Clean, Restrained, High-Contrast */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-tactical: rgba(255, 255, 255, 0.12);
+  --border-active: #e50914;
+  --border-red-subtle: rgba(229, 9, 20, 0.3);
+
+  /* Red Accent Hierarchy — Intentional, Restrained */
+  --red-primary: #e50914;
+  --red-dark: #c90812;
+  --red-bright: #ff2a3a;
+  --red-badge-bg: rgba(229, 9, 20, 0.1);
+  --red-glow: rgba(229, 9, 20, 0.2);
+
+  /* Status Colors */
+  --status-green: #06d6a0;
+  --status-yellow: #ffd166;
+  --status-red: #ef476f;
+  --status-blue: #38bdf8;
+
+  /* Text & Typography */
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Fonts */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, monospace;
+
+  /* Restrained Radii (4-6px controls, 6-10px cards, 8-12px surfaces) */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-card: 8px;
+  --radius-lg: 10px;
+  --radius-btn: 6px;
+  --radius-pill: 9999px;
+
+  /* Subtle Shadows — Contrast over blur */
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-card);
+  --shadow-card-elevated: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-tactical);
+  --shadow-btn: 0 2px 8px rgba(229, 9, 20, 0.25);
+
+  /* Motion & Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 220ms;
+  --duration-slow: 350ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-app);
+  /* Faint static tactical grid texture */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2330;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red-primary);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.mono-figure {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.02em;
+}
+
+/* Tactical UI Cards & Panels */
+.ui-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  position: relative;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+
+.ui-card:hover {
+  border-color: var(--border-tactical);
+  transform: translateY(-2px);
+}
+
+.ui-card-highlight {
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.08) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border-red-subtle);
+}
+
+/* Open Bordered Section (Alternative to card) */
+.tactical-section {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.tactical-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  width: 100%;
+  margin: 1.25rem 0;
+}
+
+/* Status Pill Tags */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.status-pill-green {
+  background: rgba(6, 214, 160, 0.1);
+  color: var(--status-green);
+  border: 1px solid rgba(6, 214, 160, 0.25);
+}
+
+.status-pill-yellow {
+  background: rgba(255, 209, 102, 0.1);
+  color: var(--status-yellow);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+}
+
+.status-pill-red {
+  background: var(--red-badge-bg);
+  color: var(--red-bright);
+  border: 1px solid var(--border-red-subtle);
+}
+
+.status-pill-neutral {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Tactical Action Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 700;
+  padding: 0.6rem 1.15rem;
+  border-radius: var(--radius-btn);
+  background: var(--red-primary);
+  color: #ffffff;
+  border: 1px solid var(--red-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--red-bright);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-btn);
+  background: var(--bg-card-elevated);
+  color: var(--text-main);
+  border: 1px solid var(--border-card);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  border-color: var(--border-tactical);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.btn-ghost:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-subtle);
+}
+
+/* Inputs & Forms */
+.ui-input, .ui-select {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.ui-input:focus, .ui-select:focus {
+  border-color: var(--red-primary);
+}
+
+.ui-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
+}
+
+/* Tactical Progress Track */
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-dark) 0%, var(--red-primary) 100%);
+  border-radius: 3px;
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+/* Restrained Status Pip */
+.pulsing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: var(--status-green);
+  flex-shrink: 0;
+}
+
+/* Modal Window */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 8, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-tactical);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.98) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* View Transition */
+.view-enter {
+  animation: viewFadeIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Accessibility: Full Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
