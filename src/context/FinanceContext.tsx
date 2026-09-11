@@ -171,48 +171,48 @@ export const INITIAL_DEMO_HOLDINGS: InvestmentHolding[] = [
 
 export const INITIAL_EMPTY_PROFILE: FinancialProfile = {
   user: {
-    name: 'Alex Rivera',
-    age: 28,
+    name: '',
+    age: 26,
     country: 'India',
     currency: 'INR',
   },
   income: {
-    monthlySalary: 85000,
-    otherIncome: 5000,
+    monthlySalary: 0,
+    otherIncome: 0,
   },
   expenses: {
     fixed: {
-      rent: 20000,
-      utilities: 3500,
-      internet: 1200,
-      phone: 800,
-      insurance: 2500,
-      emi: 5000,
-      subscriptions: 1500,
-      transportation: 3500,
+      rent: 0,
+      utilities: 0,
+      internet: 0,
+      phone: 0,
+      insurance: 0,
+      emi: 0,
+      subscriptions: 0,
+      transportation: 0,
       education: 0,
       other: 0,
     },
     variable: {
-      food: 6500,
-      shopping: 2500,
-      entertainment: 2000,
-      travel: 1500,
-      miscellaneous: 1000,
+      food: 0,
+      shopping: 0,
+      entertainment: 0,
+      travel: 0,
+      miscellaneous: 0,
     },
   },
   position: {
-    currentSavings: 200000,
-    emergencyFund: 120000,
-    existingInvestments: 350000,
+    currentSavings: 0,
+    emergencyFund: 0,
+    existingInvestments: 0,
     debt: {
       outstandingLoans: 0,
       creditCardDebt: 0,
     },
   },
-  priorities: ['Emergency fund', 'Long-term wealth creation'],
+  priorities: [],
   riskPreference: 'moderate',
-  hasCompletedOnboarding: true,
+  hasCompletedOnboarding: false,
   updatedAt: new Date().toISOString(),
 };
 
@@ -744,7 +744,19 @@ interface FinanceContextType {
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
+const RESET_DATA_VERSION_KEY = 'finance_os_reset_uptill_now_v1';
+
 export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Clear all previous/legacy saved user data once to ensure a clean slate
+  if (typeof window !== 'undefined' && !localStorage.getItem(RESET_DATA_VERSION_KEY)) {
+    try {
+      safePurgeAllData();
+      localStorage.setItem(RESET_DATA_VERSION_KEY, 'true');
+    } catch {
+      // ignore in SSR or restricted storage environments
+    }
+  }
+
   const [realProfile, setRealProfile] = useState<FinancialProfile>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_PROFILE);
     if (saved) {
@@ -1478,16 +1490,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const clearAllData = () => {
-    localStorage.removeItem(STORAGE_KEY_PROFILE);
-    localStorage.removeItem(STORAGE_KEY_TRANSACTIONS);
-    localStorage.removeItem(STORAGE_KEY_TRANSACTIONS_LEGACY);
-    localStorage.removeItem(STORAGE_KEY_BUDGETS);
-    localStorage.removeItem(STORAGE_KEY_CATEGORIES);
-    localStorage.removeItem(STORAGE_KEY_MISSIONS);
-    localStorage.removeItem(STORAGE_KEY_CONTRIBUTIONS);
-    localStorage.removeItem(STORAGE_KEY_INVESTMENT_PROFILE);
-    localStorage.removeItem(STORAGE_KEY_INVESTMENT_HOLDINGS);
-    localStorage.removeItem(STORAGE_KEY_DISMISSED_INSIGHTS);
+    safePurgeAllData();
     setRealProfile(INITIAL_EMPTY_PROFILE);
     setIsDemoMode(false);
     setRealTransactions([]);
@@ -1498,7 +1501,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setRealInvestmentProfile(INITIAL_DEFAULT_INVESTMENT_PROFILE);
     setRealHoldings([]);
     setDismissedInsightIds([]);
-    setShowOnboardingModal(true);
+    setShowOnboardingModal(false);
   };
 
   // Transaction mutations
@@ -1968,7 +1971,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setRealInvestmentProfile(INITIAL_DEFAULT_INVESTMENT_PROFILE);
     setRealHoldings([]);
     setDismissedInsightIds([]);
-    setShowOnboardingModal(true);
+    setShowOnboardingModal(false);
   }, []);
 
   return (

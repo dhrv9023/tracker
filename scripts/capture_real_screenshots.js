@@ -35,6 +35,7 @@ async function capture() {
 
   // Initialize localStorage with completed onboarding and rich demo profile
   await page.evaluate(() => {
+    localStorage.setItem('finance_os_reset_uptill_now_v1', 'true');
     localStorage.setItem('finance_tutorial_completed_v1', 'true');
     const demoProfile = {
       user: { name: 'Operative Lead', age: 28, country: 'India', currency: 'INR' },

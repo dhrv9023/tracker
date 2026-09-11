@@ -31,6 +31,8 @@ export const STORAGE_KEYS = {
   ADVISOR_MESSAGES: 'finance_os_advisor_messages_v1',
   DISMISSED_INSIGHTS: 'finance_os_dismissed_insights_v1',
   DEMO_MODE: 'finance_os_demo_mode_v1',
+  TUTORIAL_COMPLETED: 'finance_tutorial_completed_v1',
+  ONBOARDING_DISMISSED: 'finance_onboarding_dismissed',
 } as const;
 
 export interface ExportedFinancialBackup {
