@@ -37,6 +37,7 @@ async function capture() {
   await page.evaluate(() => {
     localStorage.setItem('finance_os_reset_uptill_now_v1', 'true');
     localStorage.setItem('finance_tutorial_completed_v1', 'true');
+    sessionStorage.setItem('finance_os_session_unlocked_v1', 'true');
     const demoProfile = {
       user: { name: 'Operative Lead', age: 28, country: 'India', currency: 'INR' },
       income: { monthlySalary: 125000, otherIncome: 15000 },

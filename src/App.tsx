@@ -26,6 +26,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { WalkthroughView } from './components/walkthrough/WalkthroughView';
+import { AuthLockGate } from './components/auth/AuthLockGate';
 
 const MainAppContent: React.FC = () => {
   const { activeTab, setActiveTab, showOnboardingModal, setShowOnboardingModal, profile, isDemoMode } = useFinance();
@@ -141,7 +142,9 @@ const MainAppContent: React.FC = () => {
 export function App() {
   return (
     <FinanceProvider>
-      <MainAppContent />
+      <AuthLockGate>
+        <MainAppContent />
+      </AuthLockGate>
     </FinanceProvider>
   );
 }

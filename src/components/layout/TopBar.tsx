@@ -6,7 +6,8 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
-import { Edit3, HelpCircle, BookOpen, ArrowLeft } from 'lucide-react';
+import { Edit3, HelpCircle, BookOpen, ArrowLeft, Lock } from 'lucide-react';
+import { triggerTerminalLock } from '../auth/AuthLockGate';
 
 interface TopBarProps {
   onEditBaseline: () => void;
@@ -150,6 +151,24 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }
           style={{ fontSize: '0.78rem', padding: '0.4rem 0.8rem' }}
         >
           <Edit3 size={13} /> Edit Baseline
+        </button>
+
+        {/* Tactical Terminal Lock */}
+        <button
+          type="button"
+          onClick={triggerTerminalLock}
+          className="btn-ghost"
+          style={{
+            fontSize: '0.78rem',
+            padding: '0.4rem 0.75rem',
+            gap: '0.35rem',
+            border: '1px solid rgba(229, 9, 20, 0.35)',
+            background: 'rgba(229, 9, 20, 0.08)',
+          }}
+          title="Lock Terminal Now (Require Master Passcode)"
+        >
+          <Lock size={13} style={{ color: 'var(--red-primary)' }} />
+          <span>Lock</span>
         </button>
       </div>
     </header>

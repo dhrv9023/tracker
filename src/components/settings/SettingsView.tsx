@@ -20,6 +20,8 @@ import {
   Upload,
   AlertTriangle,
   X,
+  Lock,
+  KeyRound,
 } from 'lucide-react';
 import { CategoryManager } from './CategoryManager';
 import {
@@ -31,6 +33,12 @@ import {
 import { getLocalDateString } from '../../utils/finance';
 import { SectionHeader } from '../common/SectionHeader';
 import { setTutorialCompleted } from '../tutorial/AppTutorialModal';
+import {
+  isPasswordConfigured,
+  changeMasterPassword,
+  removePasswordProtection,
+} from '../../utils/authManager';
+import { triggerTerminalLock } from '../auth/AuthLockGate';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -54,6 +62,14 @@ export const SettingsView: React.FC = () => {
   const [backupFeedback, setBackupFeedback] = useState<{ success: boolean; message: string } | null>(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState('');
+
+  // Passcode & Security State
+  const [isPassModalOpen, setIsPassModalOpen] = useState(false);
+  const [currentPasscode, setCurrentPasscode] = useState('');
+  const [newPasscode, setNewPasscode] = useState('');
+  const [confirmNewPasscode, setConfirmNewPasscode] = useState('');
+  const [passFeedback, setPassFeedback] = useState<{ success: boolean; message: string } | null>(null);
+  const [isPassConfigured, setIsPassConfigured] = useState(() => isPasswordConfigured());
 
   // Gemini API Key State
   const [geminiKeyInput, setGeminiKeyInput] = useState(() => getActiveGeminiApiKey());
@@ -142,6 +158,48 @@ export const SettingsView: React.FC = () => {
       purgeAllDataSecurely();
       setIsResetModalOpen(false);
       setResetConfirmText('');
+    }
+  };
+
+  const handleChangePasscode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPassFeedback(null);
+
+    if (newPasscode.length < 4) {
+      setPassFeedback({ success: false, message: 'New passcode must be at least 4 characters long.' });
+      return;
+    }
+    if (newPasscode !== confirmNewPasscode) {
+      setPassFeedback({ success: false, message: 'New passcodes do not match.' });
+      return;
+    }
+
+    const res = await changeMasterPassword(currentPasscode, newPasscode);
+    if (res.success) {
+      setPassFeedback({ success: true, message: 'Master passcode updated successfully.' });
+      setCurrentPasscode('');
+      setNewPasscode('');
+      setConfirmNewPasscode('');
+      setIsPassConfigured(true);
+      setTimeout(() => {
+        setIsPassModalOpen(false);
+        setPassFeedback(null);
+      }, 1500);
+    } else {
+      setPassFeedback({ success: false, message: res.error || 'Failed to update passcode.' });
+    }
+  };
+
+  const handleRemovePasscode = async () => {
+    const current = window.prompt('Enter your current master passcode to confirm removal:');
+    if (!current) return;
+
+    const res = await removePasswordProtection(current);
+    if (res.success) {
+      setIsPassConfigured(false);
+      alert('Passcode protection removed.');
+    } else {
+      alert(res.error || 'Incorrect passcode. Removal aborted.');
     }
   };
 
@@ -549,6 +607,76 @@ export const SettingsView: React.FC = () => {
         )}
       </div>
 
+      {/* 7.5 SECURITY & MASTER PASSCODE ACCESS CONTROL */}
+      <div
+        className="ui-card"
+        style={{
+          border: '1px solid rgba(229, 9, 20, 0.35)',
+          background: 'rgba(229, 9, 20, 0.03)',
+          padding: '1.5rem',
+        }}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+            <Lock size={22} style={{ color: 'var(--red-primary)', flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>
+                  SECURITY & ACCESS CONTROL
+                </h3>
+                <span className="status-pill status-pill-red">
+                  {isPassConfigured ? 'PROTECTED' : 'OPEN ACCESS'}
+                </span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.5 }}>
+                Protect this terminal with a client-side cryptographic master passcode. Sessions can be locked immediately with zero data exposure.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={triggerTerminalLock}
+              className="btn-ghost"
+              style={{
+                borderColor: 'rgba(229, 9, 20, 0.5)',
+                color: 'var(--red-primary)',
+                fontSize: '0.8rem',
+                padding: '0.55rem 1rem',
+                gap: '0.4rem',
+              }}
+            >
+              <Lock size={14} /> Lock Terminal Now
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPassFeedback(null);
+                setCurrentPasscode('');
+                setNewPasscode('');
+                setConfirmNewPasscode('');
+                setIsPassModalOpen(true);
+              }}
+              className="btn-secondary"
+              style={{ fontSize: '0.8rem', padding: '0.55rem 1rem', gap: '0.4rem' }}
+            >
+              <KeyRound size={14} /> Change Passcode
+            </button>
+            {isPassConfigured && (
+              <button
+                type="button"
+                onClick={handleRemovePasscode}
+                className="btn-ghost"
+                style={{ fontSize: '0.8rem', padding: '0.55rem 0.85rem', color: 'var(--text-muted)' }}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* 8. PURGE FINANCIAL DATA */}
       <div
         className="ui-card"
@@ -679,6 +807,133 @@ export const SettingsView: React.FC = () => {
                 DESTROY ALL DATA
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* CHANGE PASSCODE MODAL */}
+      {isPassModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="ui-card"
+            style={{
+              maxWidth: '440px',
+              width: '100%',
+              border: '1px solid rgba(229, 9, 20, 0.5)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 9, 20, 0.2)',
+              padding: '1.75rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <KeyRound size={22} style={{ color: 'var(--red-primary)' }} />
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>
+                  CHANGE MASTER PASSCODE
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPassModalOpen(false)}
+                className="btn-ghost"
+                style={{ padding: '4px' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {passFeedback && (
+              <div
+                style={{
+                  background: passFeedback.success ? 'rgba(6, 214, 160, 0.1)' : 'rgba(239, 71, 111, 0.1)',
+                  border: `1px solid ${passFeedback.success ? 'rgba(6, 214, 160, 0.3)' : 'rgba(239, 71, 111, 0.3)'}`,
+                  color: passFeedback.success ? 'var(--status-green)' : 'var(--status-red)',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: '0.78rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                {passFeedback.message}
+              </div>
+            )}
+
+            <form onSubmit={handleChangePasscode} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                  Current Passcode
+                </label>
+                <input
+                  type="password"
+                  value={currentPasscode}
+                  onChange={(e) => setCurrentPasscode(e.target.value)}
+                  placeholder="••••••••"
+                  className="tactical-input font-mono"
+                  style={{ width: '100%', fontSize: '0.95rem' }}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                  New Passcode (min 4 chars)
+                </label>
+                <input
+                  type="password"
+                  value={newPasscode}
+                  onChange={(e) => setNewPasscode(e.target.value)}
+                  placeholder="••••••••"
+                  className="tactical-input font-mono"
+                  style={{ width: '100%', fontSize: '0.95rem' }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                  Confirm New Passcode
+                </label>
+                <input
+                  type="password"
+                  value={confirmNewPasscode}
+                  onChange={(e) => setConfirmNewPasscode(e.target.value)}
+                  placeholder="••••••••"
+                  className="tactical-input font-mono"
+                  style={{ width: '100%', fontSize: '0.95rem' }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsPassModalOpen(false)}
+                  className="ui-btn ui-btn-secondary"
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="submit"
+                  className="ui-btn ui-btn-primary"
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  UPDATE PASSCODE
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
