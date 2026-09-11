@@ -15,18 +15,18 @@
   --bg-input: #0a0c13;
 
   /* Borders — Clean, Restrained, High-Contrast */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-card: rgba(255, 255, 255, 0.08);
-  --border-tactical: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-card: rgba(255, 255, 255, 0.14);
+  --border-tactical: rgba(255, 255, 255, 0.2);
   --border-active: #e50914;
-  --border-red-subtle: rgba(229, 9, 20, 0.3);
+  --border-red-subtle: rgba(229, 9, 20, 0.35);
 
   /* Red Accent Hierarchy — Intentional, Restrained */
   --red-primary: #e50914;
   --red-dark: #c90812;
   --red-bright: #ff2a3a;
-  --red-badge-bg: rgba(229, 9, 20, 0.1);
-  --red-glow: rgba(229, 9, 20, 0.2);
+  --red-badge-bg: rgba(229, 9, 20, 0.12);
+  --red-glow: rgba(229, 9, 20, 0.25);
 
   /* Status Colors */
   --status-green: #06d6a0;
@@ -34,10 +34,10 @@
   --status-red: #ef476f;
   --status-blue: #38bdf8;
 
-  /* Text & Typography */
-  --text-main: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Text & Typography — High Legibility & Contrast */
+  --text-main: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
 
   /* Fonts */
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;

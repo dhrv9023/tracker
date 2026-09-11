@@ -6,7 +6,7 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
-import { Edit3, HelpCircle } from 'lucide-react';
+import { Edit3, HelpCircle, BookOpen } from 'lucide-react';
 
 interface TopBarProps {
   onEditBaseline: () => void;
@@ -14,7 +14,7 @@ interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }) => {
-  const { activeTab, snapshot } = useFinance();
+  const { activeTab, setActiveTab, snapshot } = useFinance();
 
   const getPageTitle = (tab: string) => {
     switch (tab) {
@@ -32,6 +32,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }
         return { title: 'ADVISOR', tag: 'GUIDANCE' };
       case 'settings':
         return { title: 'SETTINGS', tag: 'CONFIGURATION' };
+      case 'walkthrough':
+        return { title: 'SYSTEM WALKTHROUGH', tag: 'FIELD MANUAL' };
       default:
         return { title: 'COMMAND CENTER', tag: 'OPERATIONS' };
     }
@@ -96,13 +98,25 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }
           </span>
         </div>
 
-        {/* Quick Tour Action */}
+        {/* Full Walkthrough & Manual */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('walkthrough')}
+          className={activeTab === 'walkthrough' ? 'btn-primary' : 'btn-ghost'}
+          style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem', gap: '0.35rem' }}
+          title="Open Full-Page System Manual & Visual Walkthrough"
+        >
+          <BookOpen size={14} style={{ color: activeTab === 'walkthrough' ? '#ffffff' : 'var(--red-bright)' }} />
+          <span>Walkthrough</span>
+        </button>
+
+        {/* Quick Tour Modal Action */}
         <button
           type="button"
           onClick={onOpenTutorial}
           className="btn-ghost"
           style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem', gap: '0.35rem' }}
-          title="Tactical System Walkthrough"
+          title="Interactive Guided Tour"
         >
           <HelpCircle size={14} style={{ color: 'var(--red-bright)' }} />
           <span>Quick Tour</span>

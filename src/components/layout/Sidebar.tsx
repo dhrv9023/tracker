@@ -13,6 +13,7 @@ import {
   Activity,
   ShieldCheck,
   Settings as SettingsIcon,
+  BookOpen,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -30,6 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenOnboarding }) => {
     { id: 'insights', index: '05', label: 'INSIGHTS', icon: Activity },
     { id: 'advisor', index: '06', label: 'ADVISOR', icon: ShieldCheck },
     { id: 'settings', index: '07', label: 'SETTINGS', icon: SettingsIcon },
+    { id: 'walkthrough', index: '08', label: 'WALKTHROUGH', icon: BookOpen },
   ];
 
   return (
@@ -41,10 +43,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenOnboarding }) => {
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
+        position: 'relative',
+        minHeight: '100%',
+        alignSelf: 'stretch',
+        zIndex: 20,
       }}
     >
       {/* Brand Header */}

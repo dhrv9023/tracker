@@ -23,7 +23,9 @@ import {
   Activity,
   ShieldCheck,
   Settings as SettingsIcon,
+  BookOpen,
 } from 'lucide-react';
+import { WalkthroughView } from './components/walkthrough/WalkthroughView';
 
 const MainAppContent: React.FC = () => {
   const { activeTab, setActiveTab, showOnboardingModal, setShowOnboardingModal, profile, isDemoMode } = useFinance();
@@ -48,6 +50,13 @@ const MainAppContent: React.FC = () => {
         return <AdvisorView />;
       case 'settings':
         return <SettingsView />;
+      case 'walkthrough':
+        return (
+          <WalkthroughView
+            onNavigate={(tabId) => setActiveTab(tabId)}
+            onOpenTutorial={() => setShowTutorial(true)}
+          />
+        );
       default:
         return <DashboardView onEditBaseline={() => setShowOnboardingModal(true)} />;
     }
@@ -61,6 +70,7 @@ const MainAppContent: React.FC = () => {
     { id: 'insights', label: 'Insights', icon: Activity },
     { id: 'advisor', label: 'Advisor', icon: ShieldCheck },
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    { id: 'walkthrough', label: 'Manual', icon: BookOpen },
   ];
 
   return (
