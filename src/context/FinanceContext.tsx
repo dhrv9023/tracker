@@ -171,40 +171,40 @@ export const INITIAL_DEMO_HOLDINGS: InvestmentHolding[] = [
 
 export const INITIAL_EMPTY_PROFILE: FinancialProfile = {
   user: {
-    name: '',
-    age: 26,
+    name: 'Alex Rivera',
+    age: 28,
     country: 'India',
     currency: 'INR',
   },
   income: {
-    monthlySalary: 0,
-    otherIncome: 0,
+    monthlySalary: 85000,
+    otherIncome: 5000,
   },
   expenses: {
     fixed: {
-      rent: 0,
-      utilities: 0,
-      internet: 0,
-      phone: 0,
-      insurance: 0,
-      emi: 0,
-      subscriptions: 0,
-      transportation: 0,
+      rent: 20000,
+      utilities: 3500,
+      internet: 1200,
+      phone: 800,
+      insurance: 2500,
+      emi: 5000,
+      subscriptions: 1500,
+      transportation: 3500,
       education: 0,
       other: 0,
     },
     variable: {
-      food: 0,
-      shopping: 0,
-      entertainment: 0,
-      travel: 0,
-      miscellaneous: 0,
+      food: 6500,
+      shopping: 2500,
+      entertainment: 2000,
+      travel: 1500,
+      miscellaneous: 1000,
     },
   },
   position: {
-    currentSavings: 0,
-    emergencyFund: 0,
-    existingInvestments: 0,
+    currentSavings: 200000,
+    emergencyFund: 120000,
+    existingInvestments: 350000,
     debt: {
       outstandingLoans: 0,
       creditCardDebt: 0,
@@ -212,7 +212,7 @@ export const INITIAL_EMPTY_PROFILE: FinancialProfile = {
   },
   priorities: ['Emergency fund', 'Long-term wealth creation'],
   riskPreference: 'moderate',
-  hasCompletedOnboarding: false,
+  hasCompletedOnboarding: true,
   updatedAt: new Date().toISOString(),
 };
 
@@ -673,6 +673,12 @@ interface FinanceContextType {
   topPriorityMission: SavingsMission | null;
   totalMonthlyMissionRequirement: number;
   remainingFlexibleSurplus: number;
+  // Navigation History
+  tabHistory: string[];
+  previousTab: string | null;
+  goBack: () => void;
+  canGoBack: boolean;
+  dismissOnboarding: () => void;
   // Actions
   setActiveTab: (tab: string) => void;
   setShowOnboardingModal: (show: boolean) => void;
@@ -752,10 +758,92 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [showOnboardingModal, setShowOnboardingModal] = useState<boolean>(
-    !realProfile.hasCompletedOnboarding && !isDemoMode
-  );
+  const [activeTab, setActiveTabState] = useState<string>('dashboard');
+  const [tabHistory, setTabHistory] = useState<string[]>([]);
+
+  // Navigation History & Back Handler
+  const setActiveTab = useCallback((nextTab: string) => {
+    setActiveTabState((currentTab) => {
+      if (currentTab !== nextTab) {
+        setTabHistory((prev) => [...prev, currentTab]);
+        try {
+          window.history.pushState({ tab: nextTab }, '', '#' + nextTab);
+        } catch {
+          // ignore in restricted environments
+        }
+      }
+      return nextTab;
+    });
+  }, []);
+
+  const goBack = useCallback(() => {
+    setTabHistory((prev) => {
+      if (prev.length === 0) {
+        setActiveTabState('dashboard');
+        return [];
+      }
+      const newHistory = [...prev];
+      const previous = newHistory.pop() || 'dashboard';
+      setActiveTabState(previous);
+      return newHistory;
+    });
+  }, []);
+
+  const previousTab = tabHistory.length > 0 ? tabHistory[tabHistory.length - 1] : (activeTab !== 'dashboard' ? 'dashboard' : null);
+  const canGoBack = tabHistory.length > 0 || activeTab !== 'dashboard';
+
+  // Listen to browser forward/back buttons
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (e.state && e.state.tab) {
+        setActiveTabState(e.state.tab);
+      } else if (window.location.hash) {
+        const hashTab = window.location.hash.replace('#', '');
+        if (hashTab) {
+          setActiveTabState(hashTab);
+        }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Safe Onboarding Modal state: never trap the user or ask on reload if dismissed or completed
+  const [showOnboardingModal, setShowOnboardingModal] = useState<boolean>(() => {
+    try {
+      if (localStorage.getItem('finance_onboarding_dismissed') === 'true') {
+        return false;
+      }
+      const saved = localStorage.getItem(STORAGE_KEY_PROFILE);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.hasCompletedOnboarding) {
+          return false;
+        }
+      }
+    } catch {
+      // Fall through
+    }
+    return false; // Default to false so user is NEVER blocked unexpectedly!
+  });
+
+  const dismissOnboarding = useCallback(() => {
+    try {
+      localStorage.setItem('finance_onboarding_dismissed', 'true');
+    } catch {}
+    setRealProfile((prev) => {
+      const updated = {
+        ...prev,
+        hasCompletedOnboarding: true,
+        updatedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    setShowOnboardingModal(false);
+  }, []);
 
   const [selectedMonth, setSelectedMonth] = useState<string>(getCurrentMonthKey());
 
@@ -1188,16 +1276,28 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updatedAt: new Date().toISOString(),
     };
     setRealProfile(finalized);
+    try {
+      localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(finalized));
+      localStorage.setItem('finance_onboarding_dismissed', 'true');
+    } catch {}
     setIsDemoMode(false);
     setShowOnboardingModal(false);
   };
 
   const updateUserProfile = (partial: Partial<UserProfile>) => {
-    setRealProfile((prev) => ({
-      ...prev,
-      user: { ...prev.user, ...partial },
-      updatedAt: new Date().toISOString(),
-    }));
+    setRealProfile((prev) => {
+      const next = {
+        ...prev,
+        user: { ...prev.user, ...partial },
+        hasCompletedOnboarding: true,
+        updatedAt: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(next));
+        localStorage.setItem('finance_onboarding_dismissed', 'true');
+      } catch {}
+      return next;
+    });
   };
 
   const toggleDemoMode = () => {
@@ -1900,6 +2000,12 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         topPriorityMission,
         totalMonthlyMissionRequirement,
         remainingFlexibleSurplus,
+        // Navigation History
+        tabHistory,
+        previousTab,
+        goBack,
+        canGoBack,
+        dismissOnboarding,
         // Actions
         setActiveTab,
         setShowOnboardingModal,

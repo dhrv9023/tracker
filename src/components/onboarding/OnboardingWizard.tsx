@@ -41,7 +41,7 @@ const PRIORITY_OPTIONS = [
 ];
 
 export const OnboardingWizard: React.FC = () => {
-  const { profile, saveFinancialProfile, setShowOnboardingModal } = useFinance();
+  const { profile, saveFinancialProfile, setShowOnboardingModal, dismissOnboarding, toggleDemoMode } = useFinance();
 
   // Step indicator: 'entry' -> 'profile' -> 'income' -> 'expenses' -> 'position' -> 'priorities' -> 'risk' -> 'summary'
   const [currentStep, setCurrentStep] = useState<
@@ -156,6 +156,19 @@ export const OnboardingWizard: React.FC = () => {
       setValidationError('Please enter a valid age between 16 and 110.');
       return;
     }
+    // Auto-save basic profile details immediately so they are never lost
+    const partialProfile: FinancialProfile = {
+      ...profile,
+      user: {
+        name: name.trim(),
+        age: parsedAge,
+        country: country.trim() || 'India',
+        currency,
+      },
+      hasCompletedOnboarding: true,
+      updatedAt: new Date().toISOString(),
+    };
+    saveFinancialProfile(partialProfile);
     setCurrentStep('income');
   };
 
@@ -261,8 +274,27 @@ export const OnboardingWizard: React.FC = () => {
             background: 'linear-gradient(180deg, #161a26 0%, #0d0f17 100%)',
             border: '1px solid rgba(229, 9, 20, 0.4)',
             boxShadow: '0 0 50px rgba(229, 9, 20, 0.25)',
+            position: 'relative',
           }}
         >
+          {/* Dismiss button on Entry Screen */}
+          <button
+            type="button"
+            onClick={dismissOnboarding}
+            className="btn-ghost"
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              padding: '0.4rem',
+              borderRadius: '50%',
+            }}
+            title="Skip and go to Command Center"
+            aria-label="Close Onboarding"
+          >
+            <X size={18} />
+          </button>
+
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
             <span className="pulsing-dot" />
             <span className="status-pill status-pill-red" style={{ letterSpacing: '0.12em' }}>
@@ -292,14 +324,37 @@ export const OnboardingWizard: React.FC = () => {
             "Let's establish your financial baseline."
           </p>
 
-          <button
-            type="button"
-            onClick={() => setCurrentStep('profile')}
-            className="btn-primary"
-            style={{ width: '100%', maxWidth: '320px', padding: '0.9rem', fontSize: '0.95rem' }}
-          >
-            INITIALIZE PROFILE
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center', width: '100%' }}>
+            <button
+              type="button"
+              onClick={() => setCurrentStep('profile')}
+              className="btn-primary"
+              style={{ width: '100%', maxWidth: '340px', padding: '0.85rem', fontSize: '0.92rem' }}
+            >
+              INITIALIZE PROFILE
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                toggleDemoMode();
+                dismissOnboarding();
+              }}
+              className="btn-secondary"
+              style={{ width: '100%', maxWidth: '340px', padding: '0.75rem', fontSize: '0.85rem' }}
+            >
+              EXPLORE WITH DEMO DATA
+            </button>
+
+            <button
+              type="button"
+              onClick={dismissOnboarding}
+              className="btn-ghost"
+              style={{ width: '100%', maxWidth: '340px', padding: '0.65rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}
+            >
+              Skip Setup (Use Default Baseline)
+            </button>
+          </div>
         </div>
       )}
 
@@ -330,16 +385,16 @@ export const OnboardingWizard: React.FC = () => {
               </h3>
             </div>
 
-            {profile.hasCompletedOnboarding && (
-              <button
-                type="button"
-                onClick={() => setShowOnboardingModal(false)}
-                className="btn-ghost"
-                style={{ padding: '0.3rem 0.5rem' }}
-              >
-                <X size={18} />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={dismissOnboarding}
+              className="btn-ghost"
+              style={{ padding: '0.3rem 0.5rem' }}
+              title="Close and save progress"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
           </div>
 
           {/* Validation Banner */}

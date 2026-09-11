@@ -6,7 +6,7 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
-import { Edit3, HelpCircle, BookOpen } from 'lucide-react';
+import { Edit3, HelpCircle, BookOpen, ArrowLeft } from 'lucide-react';
 
 interface TopBarProps {
   onEditBaseline: () => void;
@@ -14,7 +14,7 @@ interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }) => {
-  const { activeTab, setActiveTab, snapshot } = useFinance();
+  const { activeTab, setActiveTab, snapshot, goBack, canGoBack, previousTab } = useFinance();
 
   const getPageTitle = (tab: string) => {
     switch (tab) {
@@ -58,6 +58,26 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        {canGoBack && (
+          <button
+            type="button"
+            onClick={goBack}
+            className="btn-ghost"
+            style={{
+              padding: '0.35rem 0.65rem',
+              fontSize: '0.74rem',
+              gap: '0.35rem',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255, 255, 255, 0.03)',
+              marginRight: '0.25rem',
+            }}
+            title={previousTab ? `Back to ${previousTab.toUpperCase()}` : 'Go Back'}
+          >
+            <ArrowLeft size={13} style={{ color: 'var(--red-bright)' }} />
+            <span>Back</span>
+          </button>
+        )}
         <span className="status-pill status-pill-red" style={{ fontSize: '0.62rem' }}>
           {meta.tag}
         </span>

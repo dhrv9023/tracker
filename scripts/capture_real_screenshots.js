@@ -72,6 +72,45 @@ async function capture() {
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem('finance_os_profile_v1', JSON.stringify(demoProfile));
+    const demoMissions = [
+      {
+        id: 'mission-01',
+        missionCode: 'MISSION 0042',
+        name: 'Tactical Hardware Vault',
+        description: 'High-performance workstation upgrade and tactical gear',
+        category: 'Technology',
+        targetAmount: 150000,
+        initialAmount: 40000,
+        currentAmount: 95000,
+        targetDate: '2027-02-01',
+        isAsap: false,
+        monthlyContribution: 12000,
+        priority: 'high',
+        status: 'on_track',
+        isArchived: false,
+        createdAt: '2026-08-01T10:00:00Z',
+        updatedAt: '2026-09-09T12:00:00Z',
+      },
+      {
+        id: 'mission-02',
+        missionCode: 'MISSION 0010',
+        name: 'Emergency Reserve Fortress',
+        description: '6 months of liquid essential expense buffer',
+        category: 'Emergency Fund',
+        targetAmount: 250000,
+        initialAmount: 100000,
+        currentAmount: 160000,
+        targetDate: '2027-06-01',
+        isAsap: false,
+        monthlyContribution: 15000,
+        priority: 'high',
+        status: 'on_track',
+        isArchived: false,
+        createdAt: '2026-07-01T10:00:00Z',
+        updatedAt: '2026-09-01T10:00:00Z',
+      },
+    ];
+    localStorage.setItem('finance_os_missions_v1', JSON.stringify(demoMissions));
   });
 
   // Reload page to apply state cleanly
@@ -85,16 +124,20 @@ async function capture() {
     { id: 'assets', name: 'real_assets.png' },
     { id: 'insights', name: 'real_insights.png' },
     { id: 'advisor', name: 'real_advisor.png' },
+    { id: 'walkthrough', name: 'real_walkthrough.png' },
   ];
 
   const screenshotsDir = path.resolve(__dirname, '../public/screenshots');
 
   for (const tab of tabs) {
     console.log(`Navigating to tab: ${tab.id}...`);
-    // Click navigation button in sidebar
+    // Click navigation button in sidebar using data-tab-id or robust text matching
     await page.evaluate((tabId) => {
-      const buttons = Array.from(document.querySelectorAll('aside nav button'));
-      const target = buttons.find((b) => b.textContent?.toLowerCase().includes(tabId));
+      const target =
+        document.querySelector(`button[data-tab-id="${tabId}"]`) ||
+        Array.from(document.querySelectorAll('aside nav button')).find((b) =>
+          b.textContent?.toLowerCase().replace(/\s+/g, '').includes(tabId.replace(/\s+/g, ''))
+        );
       if (target) {
         target.click();
       }

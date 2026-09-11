@@ -197,8 +197,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onEditBaseline }) 
 
       {/* 2. TOP 4 KEY METRIC CARDS (SPACIOUS, HIGH-CONTRAST, EXACTLY LIKE PICTURE 2) */}
       <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
-        {/* CARD 1: HERO INFLOW CARD (RADIANT CRIMSON GRADIENT) */}
+        {/* CARD 1: HERO INFLOW CARD (RADIANT CRIMSON GRADIENT WITH BREATHING GLOW) */}
         <div
+          className="hero-card-glow stagger-1"
           style={{
             background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.45) 0%, rgba(20, 10, 14, 0.95) 75%)',
             border: '1px solid rgba(229, 9, 20, 0.5)',
@@ -268,7 +269,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onEditBaseline }) 
 
         {/* CARD 2: TOTAL SAVINGS & RESERVES */}
         <div
-          className="ui-card"
+          className="ui-card stagger-2"
           style={{
             padding: '1.35rem 1.5rem',
             display: 'flex',
@@ -330,7 +331,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onEditBaseline }) 
 
         {/* CARD 3: MONTHLY OUTFLOW */}
         <div
-          className="ui-card"
+          className="ui-card stagger-3"
           style={{
             padding: '1.35rem 1.5rem',
             display: 'flex',
@@ -394,7 +395,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onEditBaseline }) 
 
         {/* CARD 4: NET SURPLUS */}
         <div
-          className="ui-card"
+          className="ui-card stagger-4"
           style={{
             padding: '1.35rem 1.5rem',
             display: 'flex',

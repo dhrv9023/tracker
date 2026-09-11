@@ -77,18 +77,32 @@ html, body {
   background-color: var(--bg-app);
   /* Ambient tactical glow inspired by Picture 1 & 2 + faint tactical grid */
   background-image:
-    radial-gradient(circle at 85% 0%, rgba(229, 9, 20, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 15% 100%, rgba(229, 9, 20, 0.05) 0%, transparent 35%),
-    linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    radial-gradient(circle at 85% 0%, rgba(229, 9, 20, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 15% 100%, rgba(229, 9, 20, 0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.02) 0%, transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
   background-attachment: fixed;
+  animation: ambientBackgroundPulse 16s ease-in-out infinite alternate;
   color: var(--text-main);
   font-family: var(--font-sans);
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+@keyframes ambientBackgroundPulse {
+  0% {
+    filter: brightness(0.98);
+  }
+  50% {
+    filter: brightness(1.05);
+  }
+  100% {
+    filter: brightness(1.01);
+  }
 }
 
 /* Scrollbar */
@@ -312,16 +326,76 @@ html, body {
   background: linear-gradient(90deg, var(--red-dark) 0%, var(--red-primary) 100%);
   border-radius: 3px;
   transition: width var(--duration-slow) var(--ease-out);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Restrained Status Pip */
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+  animation: shimmerSweep 2.5s infinite;
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Tactical Status Pip with Real Military Radar Pulse */
 .pulsing-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   display: inline-block;
   background-color: var(--status-green);
   flex-shrink: 0;
+  position: relative;
+  animation: radarPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radarPing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(6, 214, 160, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(6, 214, 160, 0);
+  }
+}
+
+/* Radiant Crimson Hero Card Glowing Edge Breathing */
+.hero-card-glow {
+  animation: heroCrimsonBreathe 4s ease-in-out infinite;
+}
+
+@keyframes heroCrimsonBreathe {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(229, 9, 20, 0.25), 0 0 0 1px rgba(229, 9, 20, 0.4);
+  }
+  50% {
+    box-shadow: 0 12px 36px rgba(229, 9, 20, 0.45), 0 0 16px rgba(229, 9, 20, 0.25), 0 0 0 1px rgba(229, 9, 20, 0.7);
+  }
+}
+
+/* Staggered Card Entrance Animations */
+.stagger-1 { animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both; }
+.stagger-2 { animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both; }
+.stagger-3 { animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+.stagger-4 { animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
+
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Modal Window */

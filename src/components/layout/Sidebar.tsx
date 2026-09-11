@@ -108,6 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenOnboarding }) => {
           return (
             <button
               key={item.id}
+              data-tab-id={item.id}
               type="button"
               onClick={() => setActiveTab(item.id)}
               style={{
