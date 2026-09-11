@@ -30,6 +30,7 @@ import { AuthLockGate } from './components/auth/AuthLockGate';
 
 const MainAppContent: React.FC = () => {
   const { activeTab, setActiveTab, showOnboardingModal, setShowOnboardingModal, profile, isDemoMode } = useFinance();
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState<boolean>(false);
   const [showTutorial, setShowTutorial] = React.useState<boolean>(() => {
     // Show tutorial on initial load if user has completed onboarding or is in demo mode and hasn't finished tutorial
     return !isTutorialCompleted() && (profile.hasCompletedOnboarding || isDemoMode);
@@ -75,20 +76,23 @@ const MainAppContent: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-app)', position: 'relative', zIndex: 1 }}>
-      {/* Desktop Persistent Sidebar */}
-      <div className="sidebar-desktop">
-        <Sidebar onOpenOnboarding={() => setShowOnboardingModal(true)} />
-      </div>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-app)', position: 'relative', zIndex: 1, width: '100%' }}>
+      {/* Animated Tactical Navigation Drawer */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenOnboarding={() => setShowOnboardingModal(true)}
+      />
 
-      {/* Main Content Arena */}
-      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      {/* Main Content Arena (Full Screen Width) */}
+      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0, width: '100%' }}>
         <TopBar
+          onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
           onEditBaseline={() => setShowOnboardingModal(true)}
           onOpenTutorial={() => setShowTutorial(true)}
         />
 
-        <main style={{ padding: '1.75rem 2rem 5rem', maxWidth: '1400px', width: '100%', margin: '0 auto' }}>
+        <main style={{ padding: '1.75rem 2.25rem 5rem', maxWidth: '1600px', width: '100%', margin: '0 auto' }}>
           <div key={activeTab} className="view-enter">
             {renderActiveView()}
           </div>

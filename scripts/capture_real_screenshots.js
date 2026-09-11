@@ -38,6 +38,18 @@ async function capture() {
     localStorage.setItem('finance_os_reset_uptill_now_v1', 'true');
     localStorage.setItem('finance_tutorial_completed_v1', 'true');
     sessionStorage.setItem('finance_os_session_unlocked_v1', 'true');
+    localStorage.setItem(
+      'finance_os_auth_credentials_v1',
+      JSON.stringify({
+        hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        salt: 'demosalt12345678',
+        updatedAt: new Date().toISOString(),
+      })
+    );
+    localStorage.setItem(
+      'finance_os_auth_remember_token_v1',
+      JSON.stringify({ expiry: Date.now() + 86400000 * 30 })
+    );
     const demoProfile = {
       user: { name: 'Operative Lead', age: 28, country: 'India', currency: 'INR' },
       income: { monthlySalary: 125000, otherIncome: 15000 },
@@ -143,6 +155,7 @@ async function capture() {
       if (target) {
         target.click();
       }
+      window.scrollTo(0, 0);
     }, tab.id);
 
     // Give animations, svg charts, and cards 1.5s to render completely
@@ -152,6 +165,32 @@ async function capture() {
     await page.screenshot({ path: outputPath, fullPage: false });
     console.log(`Saved screenshot: ${tab.name}`);
   }
+
+  // Capture full-width dashboard without drawer
+  console.log('Capturing full-width dashboard (drawer closed)...');
+  await page.evaluate(() => {
+    const dashBtn = document.querySelector('button[data-tab-id="dashboard"]');
+    if (dashBtn) dashBtn.click();
+    window.scrollTo(0, 0);
+  });
+  await new Promise((r) => setTimeout(r, 1000));
+  const fullWidthPath = '/home/dhruv/.gemini/antigravity-ide/brain/172ceaa5-f4f1-4c1b-bacd-8673f828da22/full_width_dashboard.png';
+  await page.screenshot({ path: fullWidthPath, fullPage: false });
+  console.log('Saved full_width_dashboard.png');
+
+  // Open drawer and capture open state
+  console.log('Opening drawer and capturing open state...');
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    const menuBtn = Array.from(document.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('MENU')
+    );
+    if (menuBtn) menuBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 800));
+  const drawerOpenPath = '/home/dhruv/.gemini/antigravity-ide/brain/172ceaa5-f4f1-4c1b-bacd-8673f828da22/drawer_open_menu.png';
+  await page.screenshot({ path: drawerOpenPath, fullPage: false });
+  console.log('Saved drawer_open_menu.png');
 
   await browser.close();
   console.log('All real site screenshots captured successfully!');

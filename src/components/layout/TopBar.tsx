@@ -6,15 +6,16 @@
 import React from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { formatINR } from '../../utils/finance';
-import { Edit3, HelpCircle, BookOpen, ArrowLeft, Lock } from 'lucide-react';
+import { Edit3, HelpCircle, BookOpen, ArrowLeft, Lock, Menu } from 'lucide-react';
 import { triggerTerminalLock } from '../auth/AuthLockGate';
 
 interface TopBarProps {
   onEditBaseline: () => void;
   onOpenTutorial: () => void;
+  onToggleSidebar: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }) => {
+export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial, onToggleSidebar }) => {
   const { activeTab, setActiveTab, snapshot, goBack, canGoBack, previousTab } = useFinance();
 
   const getPageTitle = (tab: string) => {
@@ -59,6 +60,27 @@ export const TopBar: React.FC<TopBarProps> = ({ onEditBaseline, onOpenTutorial }
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        {/* Tactical Animated Drawer Toggle */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="btn-ghost"
+          style={{
+            padding: '0.38rem 0.75rem',
+            fontSize: '0.74rem',
+            gap: '0.45rem',
+            border: '1px solid rgba(229, 9, 20, 0.4)',
+            borderRadius: 'var(--radius-sm)',
+            background: 'rgba(229, 9, 20, 0.08)',
+            color: '#ffffff',
+            marginRight: '0.25rem',
+          }}
+          title="Open Navigation Menu"
+        >
+          <Menu size={15} style={{ color: 'var(--red-primary)' }} />
+          <span style={{ fontWeight: 800, letterSpacing: '0.06em' }}>MENU</span>
+        </button>
+
         {canGoBack && (
           <button
             type="button"
